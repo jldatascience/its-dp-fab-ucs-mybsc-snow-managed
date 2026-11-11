@@ -22,15 +22,15 @@ dans le `CHANGELOG.md` de `its-dp-fab-cicd-common`, versionné par tag `vX.Y.Z`.
     (aucune dépendance de déploiement, R5), coffre `frfrkvdevdp0001`, 3 service connections ARM
     en marqueurs `__A_CONFIRMER_SERVICE_CONNECTION_ARM_<ENV>__`. Remplace l'ancienne CD
     (fabric-cicd 1.2.0, `deployment/deploy.py` avec workspaces, capacités, lakehouses et SPN en dur,
-    ITG -> PPR -> PRD sans approbation, workspaces cibles de UCS Referentiel par erreur, chemin
-    PPR erroné).
+    ITG -> PPR -> PRD sans approbation, chemin PPR erroné).
   - `CICD/pipelines/PR-Validation.yml` : en-tête UCS MyBSC / SNOW.
   - `CICD/deployment/config.yml` : workspaces `FR - DP - <ENV> - FAB - UCS - MyBSC / SNOW - Managed`
     pour DEV, ITG, PPR et PRD ; `item_types_in_scope` vide.
   - `CICD/deployment/dependencies.yml` : `role: consumer`, `category: ucs`, `framework.required: false` ;
-    `guid_policy.forbidden_prefixes` avec les workspaces MyBSC / SNOW DEV (`d7578bcf-`), ITG
-    (`dd8af3a7-`) et PRD (`852072cf-`), et les workspaces UCS Referentiel ITG, PPR et PRD visés par
-    l'ancien `deploy.py`, tous absents du registre du socle v1.5.0.
+    `guid_policy.forbidden_prefixes` avec les workspaces MyBSC / SNOW ITG (`dd8af3a7-`), PPR
+    (`d7578bcf-`) et PRD (`852072cf-`) de l'ancien `deploy.py`, absents du registre du socle v1.5.0.
+    Version corrigée le même jour : la première version reposait sur un `deploy.py` erroné (ID des
+    workspaces UCS Referentiel), remplacé par le `deploy.py` réel du dépôt.
   - `CICD/deployment/parameter.yml` : aucune règle (à construire à l'inventaire).
   - `CICD/ref_dynamique/01_inventaire_github.py` à `04_recoupement.py` : outillage d'inventaire ;
     `01` classe aussi les GUID avec les préfixes de `guid_policy` ; `02` vérifie un nom de
@@ -52,6 +52,6 @@ dans le `CHANGELOG.md` de `its-dp-fab-cicd-common`, versionné par tag `vX.Y.Z`.
 - Inventaire (`data_dependencies`, `connections`, `variable_libraries`, règles `parameter.yml`)
   après branchement de la Git Integration DEV sur `fabric`.
 - Approbations des Environments ADO `fabric-ppr` et `fabric-prd`.
-- ID du workspace PPR MyBSC / SNOW : la liste des workspaces lui donne l'ID de DEV (`d7578bcf-`).
+- ID du workspace DEV MyBSC / SNOW : la liste des workspaces lui donne l'ID de PPR (`d7578bcf-`).
 - Point V-02 : clé SonarQube contenant « / ».
 - Ajout des workspaces UCS MyBSC / SNOW au registre du socle au prochain tag.

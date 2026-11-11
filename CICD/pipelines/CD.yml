@@ -2,10 +2,8 @@
 # Remplace l'ancienne CD UCS MyBSC / SNOW (ITG -> PPR -> PRD enchaînés sans approbation, groupe de
 # variables Fabric-CD-Secrets, fabric-cicd 1.2.0, deployment/deploy.py avec workspaces,
 # capacités, lakehouses et SPN en dur).
-# Défauts de l'ancienne CD, corrigés par construction ici (workspaces désignés par leur nom dans
-# config.yml, contrôlés au pré-vol) :
-#   - deploy.py visait les workspaces UCS Referentiel ITG/PPR/PRD (copie d'un autre dépôt) ;
-#   - le stage PPR appelait « its-dp-fab-ucs-mybsc-snow -managed-ci » (espace parasite).
+# Défaut de l'ancienne CD, sans objet ici : le stage PPR appelait
+# « its-dp-fab-ucs-mybsc-snow -managed-ci » (espace parasite dans le chemin de deploy.py).
 # Toute la logique est dans le template du socle commun (extends) : une seule
 # implémentation pour les 11 dépôts.
 #

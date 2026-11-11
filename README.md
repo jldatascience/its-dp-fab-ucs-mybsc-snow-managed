@@ -126,7 +126,7 @@ core:
 
 ### `dependencies.yml`
 
-`schema_version: 1`, `role: consumer`, `category: ucs`, `inventory_status: pending`, `framework.required: false`. Les listes `data_dependencies`, `connections` et `variable_libraries` sont vides et à relever à l'inventaire. `guid_policy.forbidden_prefixes` interdit, hors règle, les GUID des workspaces UCS MyBSC / SNOW DEV (`d7578bcf-`), ITG (`dd8af3a7-`) et PRD (`852072cf-`), ainsi que ceux des workspaces UCS Referentiel ITG, PPR et PRD visés à tort par l'ancien `deploy.py` ; aucun ne figure au registre du socle v1.5.0 (établi sur les 11 dépôts initiaux). L'ID PPR MyBSC / SNOW est à relever : la liste des workspaces lui attribue celui de DEV. Workspace sandbox et `allowed` restent à relever. Aucune connexion du Framework n'est reprise sans preuve d'usage par un item UCS.
+`schema_version: 1`, `role: consumer`, `category: ucs`, `inventory_status: pending`, `framework.required: false`. Les listes `data_dependencies`, `connections` et `variable_libraries` sont vides et à relever à l'inventaire. `guid_policy.forbidden_prefixes` interdit, hors règle, les GUID des workspaces UCS MyBSC / SNOW ITG (`dd8af3a7-`), PPR (`d7578bcf-`) et PRD (`852072cf-`) de l'ancien `deploy.py`, concordants avec la liste des workspaces ; aucun ne figure au registre du socle v1.5.0 (établi sur les 11 dépôts initiaux). L'ID DEV est à relever : la liste des workspaces lui attribue celui de PPR. Workspace sandbox et `allowed` restent à relever. Aucune connexion du Framework n'est reprise sans preuve d'usage par un item UCS.
 
 ### `parameter.yml`
 
@@ -180,7 +180,7 @@ La CD déploie des **définitions d'items** : elle n'exécute aucun pipeline et 
 - Identité qui publie dans Fabric : le SPN de l'environnement. Ses trois secrets `<ENV>-AZURE-CLIENT-ID`, `-CLIENT-SECRET` et `-TENANT-ID` sont lus dans le **coffre unique `frfrkvdevdp0001`** (commun aux 11 dépôts, décision du 22/10/2026) par la tâche `AzureKeyVault@2` du template imposé.
 - Accès au coffre : **une service connection Azure Resource Manager distincte par environnement**, créée par Ops en fédération d'identité. Trois sont prévues (ITG, PPR, PRD), aucune pour DEV. Le socle refuse à la compilation une service connection partagée entre deux environnements. Les marqueurs `__A_CONFIRMER_SERVICE_CONNECTION_ARM_<ENV>__` sont imposés par le socle : c'est la chaîne que détecte sa garde de compilation.
 - Le groupe de variables `Fabric-CD-Secrets` de l'ancienne CD n'est plus utilisé. Il ne doit pas être supprimé tant que les anciennes CD ne sont pas désactivées (backlog B33).
-- Aucun secret n'est versionné. L'ancien `deployment/deploy.py` UCS (ID de workspaces, capacités, lakehouses et SPN en dur) visait en outre les workspaces UCS **Referentiel** ITG, PPR et PRD (copie d'un autre dépôt), et le stage PPR de l'ancienne CD appelait un chemin erroné (`its-dp-fab-ucs-mybsc-snow -managed-ci`). Il n'existe pas dans ce dépôt et ne doit pas y revenir : le socle le refuse (`STRUCT_LEGACY_DEPLOY_HARDCODED_IDS`).
+- Aucun secret n'est versionné. L'ancien `deployment/deploy.py` UCS (ID de workspaces, capacités, lakehouses et SPN en dur) était appelé, au stage PPR de l'ancienne CD, par un chemin erroné (`its-dp-fab-ucs-mybsc-snow -managed-ci`). Il n'existe pas dans ce dépôt et ne doit pas y revenir : le socle le refuse (`STRUCT_LEGACY_DEPLOY_HARDCODED_IDS`).
 
 ## Contribuer
 
@@ -217,7 +217,7 @@ python ../its-dp-fab-cicd-common/CICD/tools/deploy.py validate --repo .
 - [ ] Remplacer les marqueurs de `CD.yml` et `PR-Validation.yml`.
 - [ ] Créer les pipelines ADO de CD et de validation de PR ; déclarer PR-Validation comme check obligatoire.
 - [ ] Vérifier le point V-01 (contenu de l'artefact CI) et le point V-02 (clé SonarQube) au premier run.
-- [ ] Relever l'ID réel du workspace PPR (`02_fab_cli.py --env PPR`), corriger la liste des workspaces et l'ajouter à `guid_policy`.
+- [ ] Relever l'ID réel du workspace DEV (`02_fab_cli.py --env DEV`), corriger la liste des workspaces et l'ajouter à `guid_policy`.
 - [ ] Faire passer `deploy.py validate` sans erreur, puis passer `inventory_status` à `validated` dans une PR revue.
 - [ ] Désactiver l'ancienne CD UCS MyBSC / SNOW (groupe `Fabric-CD-Secrets`) une fois la nouvelle CD opérationnelle.
 - [ ] Ajouter les workspaces UCS MyBSC / SNOW au registre du socle (`CICD/registry/known_guids.yml`), au prochain tag du socle.

@@ -44,23 +44,19 @@ variable_libraries: []
 intentionally_excluded_item_types: []
 # ── guid_policy — GUID interdits (sandbox) et GUID autorises (connexions communes)
 # Préfixes interdits dans les items hors règle parameter.yml (GUID_HARDCODED) : workspaces
-# UCS MyBSC / SNOW relevés dans la liste des workspaces par environnement, et workspaces UCS
-# Referentiel visés par l'ancien deploy.py de ce dépôt (copie erronée : ses ID ITG/PPR/PRD sont
-# ceux de Referentiel). Aucun ne figure dans le registre du socle v1.5.0
+# UCS MyBSC / SNOW de l'ancien deploy.py (ITG, PPR, PRD), concordants avec la liste des
+# workspaces par environnement. Ils ne figurent PAS dans le registre du socle v1.5.0
 # (CICD/registry/known_guids.yml, établi à partir des 11 dépôts initiaux) : ils sont donc
 # déclarés ici. Les capacités et les SPN de l'ancien deploy.py sont, eux, déjà au registre.
-# PPR MyBSC / SNOW : la liste des workspaces donne pour PPR le même ID que DEV (d7578bcf-),
-# vraisemblablement une erreur de recopie ; ID réel à relever (__A_RELEVER__ID_WORKSPACE_PPR__)
-# avec 02_fab_cli.py --env PPR, puis à ajouter ici.
+# DEV MyBSC / SNOW : la liste des workspaces donne à DEV le même ID qu'à PPR (d7578bcf-), que
+# l'ancien deploy.py attribue à PPR ; ID DEV réel à relever (__A_RELEVER__ID_WORKSPACE_DEV__)
+# avec 02_fab_cli.py --env DEV, puis à ajouter ici.
 # À compléter à l'inventaire (__A_RELEVER__GUID_POLICY_UCS__) : workspace sandbox éventuel,
 # connexions communes autorisées (allowed).
 guid_policy:
   forbidden_prefixes:
-  - d7578bcf-   # workspace UCS MyBSC / SNOW DEV (source Git Integration : à remplacer par règle)
-  - dd8af3a7-   # workspace UCS MyBSC / SNOW ITG
-  - 852072cf-   # workspace UCS MyBSC / SNOW PRD
-  - e642415a-   # workspace UCS Referentiel ITG (ancien deploy.py de ce dépôt, cible erronée)
-  - 18955b28-   # workspace UCS Referentiel PPR (ancien deploy.py de ce dépôt, cible erronée)
-  - 1d9c3851-   # workspace UCS Referentiel PRD (ancien deploy.py de ce dépôt, cible erronée)
+  - dd8af3a7-   # workspace UCS MyBSC / SNOW ITG (ancien deploy.py)
+  - d7578bcf-   # workspace UCS MyBSC / SNOW PPR (ancien deploy.py ; attribué aussi à DEV par la liste)
+  - 852072cf-   # workspace UCS MyBSC / SNOW PRD (ancien deploy.py)
   allowed: []
   strict_unknown: false
