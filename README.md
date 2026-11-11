@@ -126,7 +126,7 @@ core:
 
 ### `dependencies.yml`
 
-`schema_version: 1`, `role: consumer`, `category: ucs`, `inventory_status: pending`, `framework.required: false`. Les listes `data_dependencies`, `connections` et `variable_libraries` sont vides et à relever à l'inventaire. `guid_policy.forbidden_prefixes` interdit, hors règle, les GUID des workspaces UCS MyBSC / SNOW ITG (`dd8af3a7-`), PPR (`d7578bcf-`) et PRD (`852072cf-`) de l'ancien `deploy.py`, concordants avec la liste des workspaces ; aucun ne figure au registre du socle v1.5.0 (établi sur les 11 dépôts initiaux). L'ID DEV est à relever : la liste des workspaces lui attribue celui de PPR. Workspace sandbox et `allowed` restent à relever. Aucune connexion du Framework n'est reprise sans preuve d'usage par un item UCS.
+`schema_version: 1`, `role: consumer`, `category: ucs`, `inventory_status: pending`, `framework.required: false`. Les listes `data_dependencies`, `connections` et `variable_libraries` sont vides et à relever à l'inventaire. `guid_policy.forbidden_prefixes` interdit, hors règle, les GUID des workspaces UCS MyBSC / SNOW DEV (`d7578bcf-`), ITG (`dd8af3a7-`), PPR (`8f97d25d-`, confirmé dans Fabric le 11/11/2026) et PRD (`852072cf-`) ; aucun ne figure au registre du socle v1.5.0 (établi sur les 11 dépôts initiaux), tous figurent au registre v1.5.1. Workspace sandbox et `allowed` restent à relever. Aucune connexion du Framework n'est reprise sans preuve d'usage par un item UCS.
 
 ### `parameter.yml`
 
@@ -217,7 +217,7 @@ python ../its-dp-fab-cicd-common/CICD/tools/deploy.py validate --repo .
 - [ ] Remplacer les marqueurs de `CD.yml` et `PR-Validation.yml`.
 - [ ] Créer les pipelines ADO de CD et de validation de PR ; déclarer PR-Validation comme check obligatoire.
 - [ ] Vérifier le point V-01 (contenu de l'artefact CI) et le point V-02 (clé SonarQube) au premier run.
-- [ ] Relever l'ID réel du workspace DEV (`02_fab_cli.py --env DEV`), corriger la liste des workspaces et l'ajouter à `guid_policy`.
+- [ ] Corriger la ligne PPR MyBSC / SNOW de la liste des workspaces (`8f97d25d-…`, et non l'ID DEV).
 - [ ] Faire passer `deploy.py validate` sans erreur, puis passer `inventory_status` à `validated` dans une PR revue.
 - [ ] Désactiver l'ancienne CD UCS MyBSC / SNOW (groupe `Fabric-CD-Secrets`) une fois la nouvelle CD opérationnelle.
 - [ ] Ajouter les workspaces UCS MyBSC / SNOW au registre du socle (`CICD/registry/known_guids.yml`), au prochain tag du socle.

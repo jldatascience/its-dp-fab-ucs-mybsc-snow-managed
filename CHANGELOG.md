@@ -7,6 +7,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Ce dépôt n'
 par tag : chaque entrée est datée (`## AAAA-MM-JJ`). Les évolutions du socle commun sont décrites
 dans le `CHANGELOG.md` de `its-dp-fab-cicd-common`, versionné par tag `vX.Y.Z`.
 
+## 2026-11-12
+
+### Fixed
+
+- ID des workspaces MyBSC / SNOW, d'après le `deploy.py` réel du dépôt et le relevé dans Fabric du
+  11/11/2026 : DEV `d7578bcf-…`, ITG `dd8af3a7-…`, PPR `8f97d25d-495c-4b93-9699-b2c4947033e1`,
+  PRD `852072cf-…`. L'entrée du 11/11 attribuait `d7578bcf-` à PPR et laissait l'ID DEV à relever :
+  la liste des workspaces donnait à tort l'ID DEV pour PPR.
+  - `CICD/deployment/dependencies.yml` : `guid_policy.forbidden_prefixes` = DEV, ITG, PPR et PRD ;
+    marqueur `__A_RELEVER__ID_WORKSPACE_DEV__` retiré.
+  - README : section `dependencies.yml` et liste « Avant le premier déploiement ».
+
+### À confirmer
+
+- Ligne PPR MyBSC / SNOW de la liste des workspaces à corriger (`8f97d25d-…`).
+
 ## 2026-11-11
 
 ### Added
@@ -52,6 +68,5 @@ dans le `CHANGELOG.md` de `its-dp-fab-cicd-common`, versionné par tag `vX.Y.Z`.
 - Inventaire (`data_dependencies`, `connections`, `variable_libraries`, règles `parameter.yml`)
   après branchement de la Git Integration DEV sur `fabric`.
 - Approbations des Environments ADO `fabric-ppr` et `fabric-prd`.
-- ID du workspace DEV MyBSC / SNOW : la liste des workspaces lui donne l'ID de PPR (`d7578bcf-`).
 - Point V-02 : clé SonarQube contenant « / ».
 - Ajout des workspaces UCS MyBSC / SNOW au registre du socle au prochain tag.
