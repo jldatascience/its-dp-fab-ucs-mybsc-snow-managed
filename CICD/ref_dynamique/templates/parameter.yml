@@ -1,0 +1,19 @@
+# ###########################################################################
+# templates/parameter.yml  —  DÉPÔT its-dp-fab-ucs-mybsc-snow-managed (UCS)
+#
+# MODÈLE de CICD/deployment/parameter.yml, rempli par 03_remplir.py.
+#  - Le rendu est écrit HORS du dépôt ; recopie manuelle dans une PR revue.
+#  - Aucun GUID : le socle v1.5.0 refuse un GUID littéral dans replace_value
+#    (RULE_LITERAL_GUID). Les règles s'écrivent avec des variables fabric-cicd
+#    résolues au déploiement dans le workspace cible.
+#  - UCS (R5) : seules les références au WORKSPACE COURANT sont admises
+#    ($workspace.$id, $items.<Type>.<nom>.$id). Aucune référence inter-workspace,
+#    Framework compris (DEPS_CROSS_WORKSPACE_FORBIDDEN).
+#
+# Marqueur résolu par 03_remplir.py :
+#   <<REGLES_WORKSPACE_COURANT>> : deux règles (workspaceId + pipelineId/notebookId) par
+#   activité InvokePipeline / TridentNotebook relevée par 01_inventaire_github.py dont
+#   l'item appelé est un item UCS identifié (ID trouvé dans un fabric_<ENV>.json de 02).
+#   Les références non identifiées ou inter-workspace sont listées, jamais converties.
+# ###########################################################################
+key_value_replace: <<REGLES_WORKSPACE_COURANT>>

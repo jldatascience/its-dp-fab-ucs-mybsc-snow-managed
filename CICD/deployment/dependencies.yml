@@ -1,0 +1,66 @@
+# CICD/deployment/dependencies.yml — its-dp-fab-ucs-mybsc-snow-managed (UCS MyBSC / SNOW)
+# Fichier propre à la chaîne KPMG (lu par le socle its-dp-fab-cicd-common, pas par fabric-cicd).
+# inventory_status: pending -> la CD refuse toute publication (code 3) tant que l'inventaire
+# des références n'a pas été revérifié sur la branche réelle (deploy.py validate sans erreur).
+# ── schema_version — version du format de ce fichier (lu par le socle, pas par fabric-cicd)
+schema_version: 1
+# ── repository — nom du depot decrit
+repository: its-dp-fab-ucs-mybsc-snow-managed
+# v1.3 — category ucs : AUCUNE dépendance de déploiement (R5). UCS peut consommer des données
+#   d'autres workspaces, mais ni le Framework, ni un ADP, ni un BDP ne conditionne son
+#   déploiement : aucun pré-vol Framework, aucune porte ADO, aucun ordre.
+# ── role — producer (framework) ou consumer (ADP/BDP/UCS)
+role: consumer
+# ── category — framework | adp | bdp | ucs : pilote les regles de dependance v1.3
+category: ucs
+# ── inventory_status — 'pending' BLOQUE la publication tant que l'inventaire n'est pas revalide
+inventory_status: pending
+# ── framework — prerequis Framework : sans objet pour UCS
+framework:
+  # false obligatoire, sans workspace, items ni ado_gate (sinon DEPS_UCS_INDEPENDENT).
+  required: false
+# upstreams (v1.1-v1.2) : interdit en v1.3 (DEPS_UPSTREAM_FORBIDDEN).
+#
+# Dépendances classées par nature :
+#   - déploiement : AUCUNE (R5) — rien à déclarer, aucune clé prévue ;
+#   - données / techniques / exécution : documentaires, jamais bloquantes (R6), ci-dessous.
+# Format : - {repository: <dépôt>, kind: data|technical|execution, description: <texte>}
+#   kind data      : tables ou fichiers d'un autre Data Product lus par UCS (shortcut, requête) ;
+#   kind technical : composant technique partagé (bibliothèque, connexion commune) ;
+#   kind execution : ordre d'exécution des traitements (orchestration), jamais de déploiement.
+# Aucune dépendance confirmée au 11/11/2026 (__A_RELEVER__DATA_DEPENDENCIES_UCS__).
+# ── data_dependencies — dependances documentaires uniquement (jamais bloquantes, R6)
+data_dependencies: []
+# ── connections — connexions Fabric attendues (resolues par nom a l'execution)
+# À relever à l'inventaire (__A_RELEVER__CONNEXIONS_FABRIC_UCS__) : aucune connexion du Framework
+# n'est reprise sans preuve de son usage par un item UCS.
+# Format : - {name: {DEV: <nom>, ITG: …} ou {_ALL_: <nom>}, purpose: <texte>}
+connections: []
+# ── variable_libraries — value set attendu actif, par environnement
+# À relever à l'inventaire (__A_RELEVER__VARIABLE_LIBRARIES_UCS__).
+# Format : - {name: <nom>, expected_active_value_set: {DEV: DEV, ITG: ITG, PPR: PPR, PRD: PRD}}
+variable_libraries: []
+# ── intentionally_excluded_item_types — types volontairement hors perimetre
+intentionally_excluded_item_types: []
+# ── guid_policy — GUID interdits (sandbox) et GUID autorises (connexions communes)
+# Préfixes interdits dans les items hors règle parameter.yml (GUID_HARDCODED) : workspaces
+# UCS MyBSC / SNOW relevés dans la liste des workspaces par environnement, et workspaces UCS
+# Referentiel visés par l'ancien deploy.py de ce dépôt (copie erronée : ses ID ITG/PPR/PRD sont
+# ceux de Referentiel). Aucun ne figure dans le registre du socle v1.5.0
+# (CICD/registry/known_guids.yml, établi à partir des 11 dépôts initiaux) : ils sont donc
+# déclarés ici. Les capacités et les SPN de l'ancien deploy.py sont, eux, déjà au registre.
+# PPR MyBSC / SNOW : la liste des workspaces donne pour PPR le même ID que DEV (d7578bcf-),
+# vraisemblablement une erreur de recopie ; ID réel à relever (__A_RELEVER__ID_WORKSPACE_PPR__)
+# avec 02_fab_cli.py --env PPR, puis à ajouter ici.
+# À compléter à l'inventaire (__A_RELEVER__GUID_POLICY_UCS__) : workspace sandbox éventuel,
+# connexions communes autorisées (allowed).
+guid_policy:
+  forbidden_prefixes:
+  - d7578bcf-   # workspace UCS MyBSC / SNOW DEV (source Git Integration : à remplacer par règle)
+  - dd8af3a7-   # workspace UCS MyBSC / SNOW ITG
+  - 852072cf-   # workspace UCS MyBSC / SNOW PRD
+  - e642415a-   # workspace UCS Referentiel ITG (ancien deploy.py de ce dépôt, cible erronée)
+  - 18955b28-   # workspace UCS Referentiel PPR (ancien deploy.py de ce dépôt, cible erronée)
+  - 1d9c3851-   # workspace UCS Referentiel PRD (ancien deploy.py de ce dépôt, cible erronée)
+  allowed: []
+  strict_unknown: false

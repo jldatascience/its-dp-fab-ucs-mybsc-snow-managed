@@ -1,0 +1,95 @@
+# CD.yml — its-dp-fab-ucs-mybsc-snow-managed (UCS MyBSC / SNOW)
+# Remplace l'ancienne CD UCS MyBSC / SNOW (ITG -> PPR -> PRD enchaînés sans approbation, groupe de
+# variables Fabric-CD-Secrets, fabric-cicd 1.2.0, deployment/deploy.py avec workspaces,
+# capacités, lakehouses et SPN en dur).
+# Défauts de l'ancienne CD, corrigés par construction ici (workspaces désignés par leur nom dans
+# config.yml, contrôlés au pré-vol) :
+#   - deploy.py visait les workspaces UCS Referentiel ITG/PPR/PRD (copie d'un autre dépôt) ;
+#   - le stage PPR appelait « its-dp-fab-ucs-mybsc-snow -managed-ci » (espace parasite).
+# Toute la logique est dans le template du socle commun (extends) : une seule
+# implémentation pour les 11 dépôts.
+#
+# Approbations PPR/PRD : Environments ADO fabric-ppr / fabric-prd (Approvals and checks).
+# Branches (v1.2) : develop → ITG, release/* → PPR, main → PRD ; toute autre branche est refusée.
+# Un run ne déploie qu'UN environnement (celui de la branche source de l'artefact CI).
+# Dépendances (v1.3, R5) : UCS n'a AUCUNE dépendance de déploiement, ni vers le Framework,
+# ni vers un ADP ou un BDP. Une consommation de données (data_dependencies) n'est jamais une porte.
+# État au 11/11/2026 : fabric/ ne contient aucun item et inventory_status vaut pending :
+# aucun stage ne peut publier (la CD refuse en code 3).
+# ── trigger — pas de declenchement direct (le pipeline CI pousse l'artefact)
+trigger: none
+# ── pr — pas de declenchement sur Pull Request
+pr: none
+
+# ── resources — socle commun (par TAG immuable) + artefact du pipeline CI
+resources:
+  repositories:
+    - repository: cicd_common
+      type: github
+      # Service connection GitHub existante du projet Data Platform (nom à relever).
+      endpoint: __A_RELEVER__SERVICE_CONNECTION_GITHUB__
+      name: __A_RELEVER__ORG_GITHUB__/its-dp-fab-cicd-common
+      # Tag immuable du socle commun : toute évolution = nouveau tag + PR ici.
+      ref: refs/tags/v1.5.0
+  pipelines:
+    - pipeline: ci
+      # Nom du pipeline CI dans Azure DevOps, repris de l'ancienne CD UCS (source:
+      # its-dp-fab-ucs-mybsc-snow-managed-ci). Casse exacte à confirmer dans ADO.
+      source: its-dp-fab-ucs-mybsc-snow-managed-ci
+      # v1.2 : un run de CD par build CI ; l'environnement dépend de la branche source :
+      # develop → ITG, release/* → PPR, main → PRD (paramètre sourceBranches du template).
+      trigger:
+        branches:
+          include:
+            - develop
+            - release/*
+            - main
+
+# ── extends — etend le template CD du socle : toute la logique de deploiement y est
+extends:
+  template: CICD/pipelines/templates/cd-pipeline.yml@cicd_common
+  parameters:
+    repository: its-dp-fab-ucs-mybsc-snow-managed
+    # Le template n'accepte que framework | consumer : UCS est « consumer »
+    # (category ucs dans dependencies.yml ; cohérence contrôlée par --expected-role).
+    role: consumer
+    # DEV : aucun stage. Le workspace « FR - DP - DEV - FAB - UCS - MyBSC / SNOW - Managed »
+    # est alimenté par Git Integration (dossier fabric de develop), jamais par la CD.
+    devMode: skip
+    lastEnvironment: PRD
+    # ---- Authentification et secrets (socle v1.4.0, décision du 22/10/2026) ---------------
+    # Service connections Azure DevOps (ARM) ≠ connexions Fabric (déclarées dans dependencies.yml) :
+    # les premières authentifient le pipeline auprès d'Azure, les secondes sont utilisées
+    # par les items Fabric à l'exécution.
+    #
+    # Identité qui publie dans Fabric : SPN de l'environnement (authMode: secret). Ses 3 valeurs
+    # <ENV>-AZURE-CLIENT-ID / -CLIENT-SECRET / -TENANT-ID sont lues par AzureKeyVault@2, tâche du
+    # template imposé du socle (seuls les 3 secrets de l'environnement du stage sont lus).
+    authMode: secret
+    secretSource: keyVault
+    # Coffre UNIQUE pour ITG, PPR et PRD, commun aux 11 dépôts (décision du 22/10/2026, valeur
+    # par défaut du template v1.5.0). Pas de coffre propre à UCS.
+    keyVaultName: frfrkvdevdp0001
+    # UNE service connection Azure Resource Manager DISTINCTE par environnement, créée par Ops
+    # en fédération d'identité (Workload Identity Federation : aucun secret pour se connecter
+    # à Azure). Ce n'est PAS le nom du coffre. Deux environnements ne peuvent pas partager
+    # la même service connection. RBAC « Key Vault Secrets User » de chacune limité aux
+    # 3 secrets <ENV>-AZURE-* de SON environnement.
+    # Décision du 31/10/2026 : 3 service connections ARM, une par environnement (ITG, PPR, PRD),
+    # à créer ; aucune pour DEV. Une connexion partagée est refusée à la compilation.
+    # Marqueur __A_CONFIRMER_… imposé par le socle : c'est la seule chaîne détectée par la
+    # garde de compilation de stage-deploy.yml (un marqueur __A_RELEVER__ ne la déclencherait pas).
+    # DEV : vide car devMode: skip.
+    serviceConnections:
+      DEV: ""
+      ITG: __A_CONFIRMER_SERVICE_CONNECTION_ARM_ITG__
+      PPR: __A_CONFIRMER_SERVICE_CONNECTION_ARM_PPR__
+      PRD: __A_CONFIRMER_SERVICE_CONNECTION_ARM_PRD__
+    # Le groupe Fabric-CD-Secrets n'est plus référencé. Il reste utilisé par les ANCIENNES CD
+    # jusqu'à leur désactivation : ne pas le supprimer avant (backlog B33).
+    #
+    # Porte Framework : sans objet pour UCS (R5). Le socle ne l'applique qu'aux catégories adp et
+    # bdp (needs_framework_gate) ; « off » évite tout appel à l'historique ADO et toute dépendance
+    # au nom de la CD Framework. Avec « ado », le rapport indiquerait seulement GATE_NOT_APPLICABLE.
+    frameworkGate: "off"
+    frameworkPipelineName: ""
